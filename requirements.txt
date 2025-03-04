@@ -3,3 +3,4 @@ openai
 youtube_dl
 requests
 Pillow
+yt_dlp
