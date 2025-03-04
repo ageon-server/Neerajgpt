@@ -1,12 +1,8 @@
-import dotenv
 import logging
 from telegram import Update, BotCommand
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackContext
-from config import config
-from modules import aichat, downloader, fun, moderation, security, owner, utilities
-
-# Load environment variables from .env file
-dotenv.load_dotenv()
+import config
+from modules import moderation, downloader, fun, ai_chat, security, utilities, owner
 
 # Configure logging
 logging.basicConfig(
@@ -30,7 +26,7 @@ COMMANDS = {
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
-    await update.message.reply_text('Hello! I am your bot.')
+    await update.message.reply_text(f"Welcome to Ageon Bot! Managed by {config.OWNER_NAME}")
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /help is issued."""
@@ -47,7 +43,7 @@ async def error_handler(update: object, context: CallbackContext) -> None:
 
 def main() -> None:
     """Start the bot."""
-    application = ApplicationBuilder().token(config.TOKEN).build()
+    application = ApplicationBuilder().token(config.BOT_TOKEN).build()
 
     # Set bot commands for UI
     application.bot.set_my_commands([
@@ -59,13 +55,13 @@ def main() -> None:
     application.add_handler(CommandHandler("help", help_command))
 
     # Load all modules
-    aichat.setup(application)
-    downloader.setup(application)
-    fun.setup(application)
-    moderation.setup(application)
-    security.setup(application)
-    owner.setup(application)
-    utilities.setup(application)
+    moderation.register_handlers(application)
+    downloader.register_handlers(application)
+    fun.register_handlers(application)
+    ai_chat.register_handlers(application)
+    security.register_handlers(application)
+    utilities.register_handlers(application)
+    owner.register_handlers(application)
 
     # Error handler
     application.add_error_handler(error_handler)
