@@ -31,7 +31,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         [InlineKeyboardButton("Use Fetchera", callback_data='fetchera')]
     ]
     reply_markup = InlineKeyboardMarkup(keyboard)
-    await update.message.reply_text(f"Welcome to Ageon Bot! Managed by {config.Config.OWNER_NAME}", reply_markup=reply_markup)
+    await update.message.reply_text(f"Welcome to Ageon Bot! Managed by {config.Config.OWNER_USERNAME}", reply_markup=reply_markup)
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /help is issued."""
@@ -76,7 +76,6 @@ def main() -> None:
     security.register_handlers(application)
     utilities.register_handlers(application)
     owner.register_handlers(application)
-    fetchera.register_handlers(application)
 
     # Error handler
     application.add_error_handler(error_handler)
