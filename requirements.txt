@@ -4,4 +4,4 @@ youtube_dl
 requests
 Pillow
 yt_dlp
-python dotenv
+python-dotenv==1.0.0
