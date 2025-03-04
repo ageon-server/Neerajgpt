@@ -1,8 +1,8 @@
 import logging
-from telegram import Update, BotCommand
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackContext
+from telegram import Update, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, ContextTypes, CallbackContext
 import config
-from modules import moderation, downloader, fun, ai_chat, security, utilities, owner
+from modules import moderation, downloader, fun, ai_chat, security, utilities, owner, fetchera
 
 # Configure logging
 logging.basicConfig(
@@ -26,14 +26,27 @@ COMMANDS = {
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /start is issued."""
-    await update.message.reply_text(f"Welcome to Ageon Bot! Managed by {config.OWNER_NAME}")
+    logger.info("Received /start command")
+    keyboard = [
+        [InlineKeyboardButton("Use Fetchera", callback_data='fetchera')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text(f"Welcome to Ageon Bot! Managed by {config.Config.OWNER_NAME}", reply_markup=reply_markup)
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Send a message when the command /help is issued."""
+    logger.info("Received /help command")
     help_text = "Available commands:\n"
     for command, description in COMMANDS.items():
         help_text += f"/{command} - {description}\n"
     await update.message.reply_text(help_text)
+
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Handle button presses."""
+    query = update.callback_query
+    await query.answer()
+    if query.data == 'fetchera':
+        await fetchera.use_fetchera(query, context)
 
 async def error_handler(update: object, context: CallbackContext) -> None:
     """Log the error and send a message to the user."""
@@ -43,7 +56,7 @@ async def error_handler(update: object, context: CallbackContext) -> None:
 
 def main() -> None:
     """Start the bot."""
-    application = ApplicationBuilder().token(config.BOT_TOKEN).build()
+    application = ApplicationBuilder().token(config.Config.BOT_TOKEN).build()
 
     # Set bot commands for UI
     application.bot.set_my_commands([
@@ -53,6 +66,7 @@ def main() -> None:
     # Register handlers
     application.add_handler(CommandHandler("start", start))
     application.add_handler(CommandHandler("help", help_command))
+    application.add_handler(CallbackQueryHandler(button))
 
     # Load all modules
     moderation.register_handlers(application)
@@ -62,6 +76,7 @@ def main() -> None:
     security.register_handlers(application)
     utilities.register_handlers(application)
     owner.register_handlers(application)
+    fetchera.register_handlers(application)
 
     # Error handler
     application.add_error_handler(error_handler)
