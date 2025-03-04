@@ -4,7 +4,7 @@ import config
 from modules import moderation, downloader, fun, ai_chat, security, utilities, owner
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(f"Welcome to Neerajpro Bot! Managed by {config.OWNER_USERNAME}")
+    await update.message.reply_text(f"Welcome to Ageon Bot! Managed by {config.OWNER_USERNAME}")
 
 def main():
     app = Application.builder().token(config.BOT_TOKEN).build()
@@ -19,7 +19,7 @@ def main():
     utilities.register_handlers(app)
     owner.register_handlers(app)
 
-    print("Neerajpro Bot Started!")
+    print("Ageon Bot Started!")
     app.run_polling()
 
 if __name__ == "__main__":
